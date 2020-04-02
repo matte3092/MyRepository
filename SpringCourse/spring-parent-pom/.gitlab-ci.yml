@@ -1,0 +1,28 @@
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
+  CONTAINER_FINAL_NAME: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+
+stages:
+  - maven-build
+
+maven-build:
+  stage: maven-build
+  image: maven:3-jdk-11
+  cache:
+      paths:
+        - .m2/
+  script:
+    - "mvn clean install"
+    - git clone https://gitlab-ci-token:$CI_BUILD_TOKEN@gitlab.com/hermestrade-elemento/test-repo.git maven-repo
+    - GROUPID=$(mvn help:evaluate -Dexpression=project.groupId -DforceStdout=true -q)
+    - GROUPID=$(echo $GROUPID | tr "." "/")
+    - ARTIFACTID=$(mvn --non-recursive help:evaluate -Dexpression=project.artifactId)
+    - VERSION=$(mvn --non-recursive help:evaluate -Dexpression=project.version)
+    - PATH=$GROUPID/$ARTIFACTID/$VERSION
+    - echo $PATH
+    - cd maven-repo
+    - /bin/mkdir -p $PATH
+    - /bin/cp .m2/$PATH/* $PATH/
+    - /usr/bin/git add -A
+    - /usr/bin/git commit -m "Added '$ARTIFACTID-$VERSION'"
+    - /usr/bin/git push

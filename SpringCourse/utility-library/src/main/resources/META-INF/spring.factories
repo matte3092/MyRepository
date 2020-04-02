@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.hermestrade.utility.library.KeycloakSecurityConfiguration,\
+com.hermestrade.utility.library.controller.util.ControllerExceptionHandler,\
+com.hermestrade.utility.library.controller.util.CustomRequestBodyAdviceAdapter,\
+com.hermestrade.utility.library.controller.util.CustomResponseBodyAdviceAdapter,\
+com.hermestrade.utility.library.util.WebConfig
